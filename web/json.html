@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+ <title>LSHDB</title>
+ <meta charset="utf-8">
+<style>
+h1 {
+    border-bottom: 3px solid #cc9900;
+    color: #996600;
+    font-size: 30px;
+}
+h2 {
+    border-bottom: 1px solid black;
+    color: #996600;
+    font-size: 20px;
+}
+
+table, th , td  {
+    border: 0px solid grey;
+    border-collapse: collapse;
+    padding: 5px;
+}
+table tr:nth-child(odd) {
+    background-color: #f1f1f1;
+}
+table tr:nth-child(even) {
+    background-color: #ffffff;
+}
+
+
+html,
+body {
+  color: #404040; 
+  margin: 1;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  padding: 0 20px;
+}
+.container {
+        width: 400px;
+        clear: both;
+}
+
+ span.bold-red {
+    color: red;
+    font-weight: bold;
+}
+
+ </style>
+  <script src="jquery-3.1.0.js"></script>  
+</head>
+<link href="slider/nouislider.min.css" rel="stylesheet">
+<body>
+
+<script src="slider/nouislider.min.js"></script>
+
+<script>
+var server = "localhost";
+var port = "4443"; 
+</script>
+<h1>LSHDB</h1>
+<h2>querying <script>document.write(server+" at port "+port);</script></h2>
+<form  name="form1" class="container">
+<label>Enter the surname of a first author of the DBLP publications: </label><input type="text"  style="width: 140px;"   id="authorText" pattern=".{4,20}" required  /><span id="spanErrorMsg" class="bold-red"></span><br><br>
+<label>Similarity slider: </label></td><td><div id="range" style="width: 200px;" ></div><input id="sliderText" style="width: 40px;" ><br><br><br>
+<input type="submit" class="button" value="Submit" width="20%">
+
+<script>
+
+$(function() {
+    $(".button").click(function() {
+	   // validate and process form here
+	   var length = $("#authorText").val().length;
+	   $("#spanErrorMsg").html("");
+	   if (length<4){
+	        $("#spanErrorMsg").html("  Please enter at least 3 characters.");
+	        return false;
+		}	
+	  $.ajax({
+	    url:"http://"+server+":"+port+"/JSON/dblp",
+		type:"get",
+		data:{author_Query: $('#authorText').val(), simPer: $('#sliderText').val(), maxNoRes:50 },
+        dataType: 'jsonp', // Notice! JSONP <-- P (lowercase)	         
+		
+        success: function(json) {
+					   if (json.error){
+					       out="Error: "+json.errorMessage;
+					   } else { 
+		                  if (json.length==0){
+					         out="No rows returned.";
+					      } else {	   
+					        out="<table>"; 	  
+						    for(i = 0; i < json.length; i++) {
+						        if (json[i].remote)
+                                     col="red";
+ 						        else col="blue";			
+						        out += "<tr><td>"+(i+1)+".</td><td style='color:"+col+";'>" +  json[i].author + "</td><td>" + json[i].title + "</td><td>" +  json[i].year +   "</td></tr>";
+						    }
+                           out += "</table>";
+					    }
+					 }
+                     document.getElementById("id01").innerHTML = out;
+
+         },
+	     error: function(XMLHttpRequest, textStatus, errorThrown) { 	       
+			   
+               out="<table><tr><td>Cannot connect to the specified server instance: "+server+" at port "+port+".</td></tr></table>"; 	  
+               document.getElementById("id01").innerHTML = out;
+	   	 }     		
+       });
+      return false;
+    });
+  });
+
+</script>
+</form>
+<hr><hr>
+<div id="id01"></div>
+
+<script>
+var range = document.getElementById('range');
+
+noUiSlider.create(range, {
+	start: 80,
+    step:1, 
+	// Disable animation on value-setting,
+	// so the sliders respond immediately.
+	animate: true,
+	range: {
+		min: 10,
+		max: 100
+	}
+});
+
+
+
+
+var valueInput = document.getElementById('sliderText')
+
+// When the slider value changes, update the input and span
+range.noUiSlider.on('update', function( values, handle ) {
+        var s = values[handle];
+        s = s.split(".")[0]; 		
+		valueInput.value = s;
+	}
+);
+
+
+
+
+</script> 
+
+</body>
+</html>

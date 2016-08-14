@@ -1,0 +1,51 @@
+<html>
+<head>
+<!-- Using jQuery with a CDN -->
+<script type="text/javascript" src="jquery-1.12.3.min.js"></script>
+<!-- JS file -->
+<script src="jquery.easy-autocomplete.js"></script> 
+<!-- CSS file -->
+<link rel="stylesheet" href="easy-autocomplete.min.css"> 
+<link rel="stylesheet" href="easy-autocomplete.themes.css"> 
+
+<script type="text/javascript" src="jquery.dataTables.min.js"></script>
+<link rel="stylesheet" type="text/css" href="jquery.dataTables.min.css" />
+</head>
+<body>
+
+<input id="provider-remote" />
+<style>
+.eac-square input {
+  background-image: url("icon_search.png");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+}
+</style>
+
+<script>
+//var server="83.212.115.69";
+var server="localhost";
+
+var options = {
+	url: function(phrase) {	    
+		return "http://"+server+":4443/JSON/dblp?author_Query=" + phrase+"&callback=?";
+	},
+    
+	getValue: function(element) {
+				return element.author+"<br>"+"<small><font color='blue'>"+element.title+"</font><\small>";
+			},		   
+	list: { 
+	   maxNumberOfElements: 10,
+	   onChooseEvent: function() {
+	        var selectedItemValue = $("#provider-remote").getSelectedItemData();
+            $("#provider-remote").val(selectedItemValue.author);		
+       }
+	},   
+	minCharNumber: 4,
+	theme: "square"
+};
+$("#provider-remote").easyAutocomplete(options);
+</script>
+
+</body>
+</html>
