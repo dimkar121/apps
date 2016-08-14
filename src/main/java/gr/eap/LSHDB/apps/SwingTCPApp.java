@@ -10,7 +10,6 @@ import gr.eap.LSHDB.Key;
 import gr.eap.LSHDB.Server_Thread;
 import gr.eap.LSHDB.StoreInitException;
 import gr.eap.LSHDB.client.Client;
-import gr.eap.LSHDB.client.ClientFormApp;
 import gr.eap.LSHDB.util.Record;
 import gr.eap.LSHDB.util.QueryRecord;
 import gr.eap.LSHDB.util.Result;
@@ -62,13 +61,13 @@ public class SwingTCPApp extends JFrame {
     String server = "localhost";
     int port = 4443;
     boolean performComparisons = true;
-    String dbName = "";
+    String storeName = "";
     int maxQueryRows = 20;
     String[] labels;
     String[] descriptions;
     char[] mnemonics;
     int[] widths;
-    Vector<String> dbNames;
+    Vector<String> storeNames;
     JTextField[] textFields;
     JSlider[] sliders;
     JCheckBox[] checks;
@@ -156,7 +155,7 @@ public class SwingTCPApp extends JFrame {
 
         final Client client = new Client(this.server, this.port);
         try {
-            dbNames = (Vector<String>) client.submitCommand(Server_Thread.GET_INDEXED_DATABASES);
+            storeNames = (Vector<String>) client.submitCommand(Server_Thread.GET_KEYED_STORES);
         } catch (ConnectException cex) {
             System.out.println(Client.CONNECTION_ERROR_MSG);
             System.out.println("Specified server: " + server);
@@ -175,7 +174,7 @@ public class SwingTCPApp extends JFrame {
 
         stopper.setRepeats(false);
 
-        final JComboBox jcombo = new JComboBox(dbNames);
+        final JComboBox jcombo = new JComboBox(storeNames);
 
         JLabel dbNamesLab = new JLabel(" Select keyed database: ");
         JButton dbButt = new JButton("Fetch keyed fields");
@@ -198,10 +197,10 @@ public class SwingTCPApp extends JFrame {
                     qPanel.remove(c);
 
                 }
-                dbName = (String) jcombo.getSelectedItem();
+                storeName = (String) jcombo.getSelectedItem();
                 String[] indexFieldNames = null;
                 try {
-                    indexFieldNames = (String[]) client.submitCommand(Server_Thread.GET_INDEXED_FIELDS + dbName);
+                    indexFieldNames = (String[]) client.submitCommand(Server_Thread.GET_KEYED_FIELDS + storeName);
                 } catch (ConnectException cex) {
                     System.out.println(Client.CONNECTION_ERROR_MSG);
                     System.out.println("Specified server: " + server);
@@ -269,7 +268,7 @@ public class SwingTCPApp extends JFrame {
                             stopper.start();
                         }
                         dPanel.repaint();
-                        QueryRecord query = new QueryRecord(dbName, maxQueryRows);
+                        QueryRecord query = new QueryRecord(storeName, maxQueryRows);
                         for (int i = 0; i < textFields.length; i++) {
                             String name = textFields[i].getName();
                             String value = textFields[i].getText();
@@ -286,8 +285,8 @@ public class SwingTCPApp extends JFrame {
                         Result r = null;
                         try {
                             r = client.queryServer(query);
-                            if (r.getStatus() == Result.STATUS_STORE_NOT_FOUND)
-                                throw new StoreInitException("The specified store "+dbName+" not found.");
+                            if (r.getStatus() == Result.STORE_NOT_FOUND)
+                                throw new StoreInitException("The specified store "+storeName+" not found.");
                             noRecsMsg.setText(noRecsLegend + r.getRecords().size());
                             timeMsg.setText(timeLegend + r.getTime());
                             handleResult(r.getRecords());

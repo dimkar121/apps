@@ -25,19 +25,19 @@ public class Insert {
     public static void main(String[] args) {
         try {
             String folder = "c:/MAPDB";
-            String dbName = "dblp";
+            String storeName = "dblp_test";
             String engine = "gr.eap.LSHDB.MapDB";
-            Key key1 = new HammingKey("author");
+            Key key1 = new HammingKey("author", 30, .1, 75, 700, true, true);
             //Key key2 = new HammingKey("title", 30, .1, 55, 500, true, true);
 
-            HammingConfiguration hc = new HammingConfiguration(folder, dbName, engine, new Key[]{key1}, true);
+            HammingConfiguration hc = new HammingConfiguration(folder, storeName, engine, new Key[]{key1}, true);
             hc.saveConfiguration();
 
-            HammingLSHStore lsh = new HammingLSHStore(folder, dbName, engine, hc, true);
+            HammingLSHStore lsh = new HammingLSHStore(folder, storeName, engine, hc, true);
 
             String file = "c://voters//dblp.txt"; // Specify  the full path of dblp.txt   
 
-            int lines = FileUtil.countLines(file);
+            int lines = 1000; //FileUtil.countLines(file);
             System.out.println("About to insert " + lines + " records.");
 
             FileReader input1 = new FileReader(file);
