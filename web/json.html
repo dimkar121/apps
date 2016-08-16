@@ -6,17 +6,20 @@
  <meta charset="utf-8">
 <style>
 h1 {
+    font-family: Tahoma,Verdana,Segoe,sans-serif;
     border-bottom: 3px solid #cc9900;
     color: #996600;
     font-size: 30px;
 }
 h2 {
+    font-family: Tahoma,Verdana,Segoe,sans-serif;
     border-bottom: 1px solid black;
     color: #996600;
     font-size: 20px;
 }
 
 table, th , td  {
+    font-family: Tahoma,Verdana,Segoe,sans-serif;
     border: 0px solid grey;
     border-collapse: collapse;
     padding: 5px;
@@ -29,10 +32,10 @@ table tr:nth-child(even) {
 }
 
 
-html,
-body {
+html{
   color: #404040; 
   margin: 1;
+  font-family: Tahoma,Verdana,Segoe,sans-serif;
 }
 
 body {
@@ -40,9 +43,11 @@ body {
   flex-direction: column;
   justify-content: space-around;
   padding: 0 20px;
+  font-family: Tahoma,Verdana,Segoe,sans-serif;
 }
+
 .container {
-        width: 400px;
+        width: 500px;
         clear: both;
 }
 
@@ -104,13 +109,14 @@ $(function() {
                            out += "</table>";
 					    }
 					 }
-                     document.getElementById("id01").innerHTML = out;
+					 $('#container').html(out);
+                     //document.getElementById("id01").innerHTML = out;
 
          },
 	     error: function(XMLHttpRequest, textStatus, errorThrown) { 	       
 			   
                out="<table><tr><td>Cannot connect to the specified server instance: "+server+" at port "+port+".</td></tr></table>"; 	  
-               document.getElementById("id01").innerHTML = out;
+               $('#container').html(out);
 	   	 }     		
        });
       return false;
@@ -120,7 +126,7 @@ $(function() {
 </script>
 </form>
 <hr><hr>
-<div id="id01"></div>
+<div id="container"></div>
 
 <script>
 var range = document.getElementById('range');
