@@ -286,7 +286,7 @@ public class SwingTCPApp extends JFrame {
                         try {
                             r = client.queryServer(query);
                             if (r.getStatus() == Result.STORE_NOT_FOUND)
-                                throw new StoreInitException("The specified store "+storeName+" not found.");
+                                throw new StoreInitException("The specified store "+storeName+" was not found.");
                             noRecsMsg.setText(noRecsLegend + r.getRecords().size());
                             timeMsg.setText(timeLegend + r.getTime());
                             handleResult(r.getRecords());
