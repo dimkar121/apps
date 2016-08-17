@@ -24,7 +24,7 @@ public class Insert {
 
     public static void main(String[] args) {
         try {
-            String folder = "/home/dimkar/LSHDB/MAPDB";
+            String folder = "c:/MAPDB";
             String storeName = "dblp";
             String engine = "gr.eap.LSHDB.MapDB";
             Key key1 = new HammingKey("author", 30, .1, 75, 700, true, true);
@@ -35,7 +35,7 @@ public class Insert {
 
             HammingLSHStore lsh = new HammingLSHStore(folder, storeName, engine, hc, true);
 
-            String file = "/home/dimkar/LSHDB/dblp.txt"; // Specify  the full path of dblp.txt   
+            String file = "c:/voters/dblp.txt"; // Specify  the full path of dblp.txt   
 
             int lines = FileUtil.countLines(file);
             System.out.println("About to insert " + lines + " records.");
