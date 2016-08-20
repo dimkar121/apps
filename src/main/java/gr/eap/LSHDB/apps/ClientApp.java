@@ -1,14 +1,17 @@
 package gr.eap.LSHDB.apps;
 
-import gr.eap.LSHDB.HammingConfiguration;
-import gr.eap.LSHDB.HammingKey;
 import gr.eap.LSHDB.HammingLSHStore;
-import gr.eap.LSHDB.Key;
 import gr.eap.LSHDB.NoKeyedFieldsException;
+import gr.eap.LSHDB.NodeCommunicationException;
 import gr.eap.LSHDB.StoreInitException;
+import gr.eap.LSHDB.client.Client;
 import gr.eap.LSHDB.util.QueryRecord;
 import gr.eap.LSHDB.util.Record;
 import gr.eap.LSHDB.util.Result;
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadMXBean;
+import java.net.ConnectException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 /*
@@ -30,7 +33,7 @@ public class ClientApp {
             String folder = "c:/MAPDB";
             String engine = "gr.eap.LSHDB.MapDB";
             lsh = new HammingLSHStore(folder, storeName, engine);
-            
+
         } catch (StoreInitException ex) {
             System.out.println(ex.getMessage());
             System.exit(0);
@@ -42,7 +45,7 @@ public class ClientApp {
         query.setKeyedField("author", new String[]{s}, .8, true);
         Result r = null;
         try {
-            r=lsh.query(query);
+            r = lsh.query(query);
             r.prepare();
             ArrayList<Record> arr = r.getRecords();
             for (int i = 0; i < arr.size(); i++) {
@@ -55,9 +58,50 @@ public class ClientApp {
         lsh.close();
     }
 
+    public static void tcpQuery(String s) {
+
+        int n = 100;
+        Thread[] threads = new Thread[n];
+
+        for (int i = 0; i < n; i++) {
+            int a = i;
+            threads[i] = new Thread(new Runnable() {
+                public void run() {
+                  for (int j=0;j<1000;j++){  
+                    try {
+                        Thread.sleep(200);
+                        ThreadMXBean bean = ManagementFactory.getThreadMXBean();
+                        int t = bean.getThreadCount();
+                        //System.out.println("t="+t);    
+                        QueryRecord query = new QueryRecord("dblp", 100);
+                        query.setKeyedField("author", new String[]{s}, .8, true);
+                        final Client c = new Client("localhost", 4443);
+                        Result r = c.queryServer(query);
+                        System.out.println(a + ".  " + r.getRecords().size() + " " + r.getTime());
+                    } catch (ConnectException cex) {
+                        System.out.println(Client.CONNECTION_ERROR_MSG);
+                        System.out.println("Specified server: " + cex.getMessage());
+                        System.out.println("You should either check its availability, or resolve any possible network issues.");
+                        //System.exit(0);
+                    } catch (UnknownHostException uhex) {
+                        System.out.println(Client.UNKNOWNHOST_ERROR_MSG);
+                        System.exit(0);
+                    } catch (NodeCommunicationException ex) {
+                        System.out.println(ex.getMessage());
+                    } catch (InterruptedException ex) {
+                        System.out.println(ex.getMessage());
+                    }
+                 }
+                }
+            });
+            threads[i].start();
+        }
+
+    }
+
     public static void main(String[] args) {
-        ClientApp app = new ClientApp();
-        app.query("Becker");
+        //ClientApp app = new ClientApp();
+        ClientApp.tcpQuery("Chris");
     }
 
 }

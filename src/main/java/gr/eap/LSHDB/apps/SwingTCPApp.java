@@ -7,6 +7,7 @@ package gr.eap.LSHDB.apps;
 
 // Imports
 import gr.eap.LSHDB.Key;
+import gr.eap.LSHDB.NodeCommunicationException;
 import gr.eap.LSHDB.Server_Thread;
 import gr.eap.LSHDB.StoreInitException;
 import gr.eap.LSHDB.client.Client;
@@ -299,6 +300,8 @@ public class SwingTCPApp extends JFrame {
                             System.out.println(Client.UNKNOWNHOST_ERROR_MSG);
                             System.exit(0);
                         } catch (StoreInitException ex) {
+                            System.out.println(ex.getMessage());
+                        } catch (NodeCommunicationException ex) {
                             System.out.println(ex.getMessage());
                         }
                         

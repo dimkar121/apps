@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+ <title>LSHDB</title>
+ <meta charset="utf-8">
+<style>
+h1 {
+    font-family: Tahoma,Verdana,Segoe,sans-serif;
+    border-bottom: 3px solid #cc9900;
+    color: #996600;
+    font-size: 30px;
+}
+h2 {
+    font-family: Tahoma,Verdana,Segoe,sans-serif;
+    border-bottom: 1px solid black;
+    color: #996600;
+    font-size: 20px;
+}
+
+table, th , td  {
+    font-family: Tahoma,Verdana,Segoe,sans-serif;
+    border: 0px solid grey;
+    border-collapse: collapse;
+    padding: 5px;
+}
+table tr:nth-child(odd) {
+    background-color: #f1f1f1;
+}
+table tr:nth-child(even) {
+    background-color: #ffffff;
+}
+
+
+html{
+  color: #404040; 
+  margin: 1;
+  font-family: Tahoma,Verdana,Segoe,sans-serif;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  padding: 0 20px;
+  font-family: Tahoma,Verdana,Segoe,sans-serif;
+}
+
+.container {
+        width: 500px;
+        clear: both;
+}
+
+ span.bold-red {
+    color: red;
+    font-weight: bold;
+}
+
+/* Start by setting display:none to make this hidden.
+   Then we position it in relation to the viewport window
+   with position:fixed. Width, height, top and left speak
+   for themselves. Background we set to 80% white with
+   our animation centered, and no-repeating */
+.modal {
+    display:    none;
+    position:   fixed;
+    z-index:    1000;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .8 ) 
+                url('waiting.gif') 
+                50% 50% 
+                no-repeat;
+}
+
+/* When the body has the loading class, we turn
+   the scrollbar off with overflow:hidden */
+body.loading {
+    overflow: hidden;   
+}
+
+/* Anytime the body has the loading class, our
+   modal element will be visible */
+body.loading .modal {
+    display: block;
+}
+
+ </style>
+  <script src="jquery-3.1.0.js"></script>  
+</head>
+<link href="slider/nouislider.min.css" rel="stylesheet">
+<body>
+
+<script src="slider/nouislider.min.js"></script>
+
+<script>
+$(document).on({
+    ajaxStart: function() { $("body").addClass("loading");    },
+     ajaxStop: function() { $("body").removeClass("loading"); }    
+});
+var server = "localhost";
+var port = "4443"; 
+</script>
+<h1>LSHDB</h1>
+<h2>querying <script>document.write(server+" at port "+port);</script></h2>
+
+<script>
+var out = "";
+function show(i) {
+  $.ajax({
+	    url:"http://"+server+":"+port+"/JSON/dblp",
+		type:"get",
+		data:{author_Query: "Chris", simPer: 100, maxNoRes:50 },
+        dataType: 'jsonp', // Notice! JSONP <-- P (lowercase)	         
+		
+        success: function(json) {
+					   if (json.error){
+					       out="Error: "+json.errorMessage;
+					   } else { 
+		                  if (json.length==0){
+					         out="No records returned.";
+					      } else {	   
+						    out = json.length+" records returned." 
+					      }
+					 }
+
+         },
+	     error: function(XMLHttpRequest, textStatus, errorThrown) { 	       
+			   
+               out="Cannot connect to the specified server instance: "+server+" at port "+port; 	  
+               $('#container').html(out);
+	   	 }     		
+       }); 
+   $('#container').html(i+" ");
+}
+
+
+for (i=1;i<1000;i++){
+
+
+      show(i);
+	  
+}
+
+</script>
+<span id="container"></span>
+
+</body>
+</html>
