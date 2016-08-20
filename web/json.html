@@ -132,16 +132,28 @@ $(function() {
 					   if (json.error){
 					       out="Error: "+json.errorMessage;
 					   } else { 
-		                  if (json.length==0){
+					      data = json.data;
+		                  if (data.length==0){
 					         out="No records returned.";
 					      } else {	   
-						    out = json.length+" records returned." 
-					        out += "<table>"; 	  
-						    for(i = 0; i < json.length; i++) {
-						        if (json[i].remote)
+						    out = data.length+" records returned.<br>";
+						    statusMap = json.statusMap;
+							out += "Health of each server: ";
+							for (k=0;k < statusMap.length;k++){
+							     if (k>0)
+								   out+=", ";
+								 col = "green";  
+								 if (statusMap[k].status > 0)
+								    col = "red";
+							     out += " <b><font color='"+col+"'>"+statusMap[k].alias+"</font></b>";   
+							}
+							
+						    out += "<table>"; 	  
+						    for(i = 0; i < data.length; i++) {
+						        if (data[i].remote)
                                      col="red";
  						        else col="blue";			
-						        out += "<tr><td>"+(i+1)+".</td><td style='color:"+col+";'>" +  json[i].author + "</td><td>" + json[i].title + "</td><td>" +  json[i].year +   "</td></tr>";
+						        out += "<tr><td>"+(i+1)+".</td><td style='color:"+col+";'>" +  data[i].author + "</td><td>" + data[i].title + "</td><td>" +  data[i].year +   "</td></tr>";
 						    }
                            out += "</table>";
 					    }
