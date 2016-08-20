@@ -41,8 +41,8 @@ public class ClientApp {
     }
 
     public void query(String s) {
-        QueryRecord query = new QueryRecord(40);
-        query.setKeyedField("author", new String[]{s}, .8, true);
+        QueryRecord query = new QueryRecord(100);
+        query.setKeyedField("author", new String[]{s}, 1, true);
         Result r = null;
         try {
             r = lsh.query(query);
@@ -78,14 +78,6 @@ public class ClientApp {
                         final Client c = new Client("localhost", 4443);
                         Result r = c.queryServer(query);
                         System.out.println(a + ".  " + r.getRecords().size() + " " + r.getTime());
-                    } catch (ConnectException cex) {
-                        System.out.println(Client.CONNECTION_ERROR_MSG);
-                        System.out.println("Specified server: " + cex.getMessage());
-                        System.out.println("You should either check its availability, or resolve any possible network issues.");
-                        //System.exit(0);
-                    } catch (UnknownHostException uhex) {
-                        System.out.println(Client.UNKNOWNHOST_ERROR_MSG);
-                        System.exit(0);
                     } catch (NodeCommunicationException ex) {
                         System.out.println(ex.getMessage());
                     } catch (InterruptedException ex) {
@@ -100,8 +92,9 @@ public class ClientApp {
     }
 
     public static void main(String[] args) {
-        //ClientApp app = new ClientApp();
-        ClientApp.tcpQuery("Chris");
+        ClientApp app = new ClientApp();
+        app.query("Chris");
+        //ClientApp.tcpQuery("Chris");
     }
 
 }

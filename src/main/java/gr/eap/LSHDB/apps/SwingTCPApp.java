@@ -11,6 +11,8 @@ import gr.eap.LSHDB.NodeCommunicationException;
 import gr.eap.LSHDB.Server_Thread;
 import gr.eap.LSHDB.StoreInitException;
 import gr.eap.LSHDB.client.Client;
+import gr.eap.LSHDB.util.ConfigurationQuery;
+import gr.eap.LSHDB.util.ConfigurationReply;
 import gr.eap.LSHDB.util.Record;
 import gr.eap.LSHDB.util.QueryRecord;
 import gr.eap.LSHDB.util.Result;
@@ -156,16 +158,15 @@ public class SwingTCPApp extends JFrame {
 
         final Client client = new Client(this.server, this.port);
         try {
-            storeNames = (Vector<String>) client.submitCommand(Server_Thread.GET_KEYED_STORES);
-        } catch (ConnectException cex) {
+            ConfigurationQuery confQuery = new ConfigurationQuery(ConfigurationQuery.GET_KEYED_STORES, "");
+            ConfigurationReply reply = client.queryConf(confQuery);            
+            storeNames = (Vector<String>) reply.getReply();
+        } catch (NodeCommunicationException cex) {
             System.out.println(Client.CONNECTION_ERROR_MSG);
             System.out.println("Specified server: " + server);
             System.out.println("You should either check its availability, or resolve any possible network issues.");
             System.exit(0);
-        } catch (UnknownHostException uhex) {
-            System.out.println(Client.UNKNOWNHOST_ERROR_MSG);
-            System.exit(0);
-        }
+        } 
 
         final Timer stopper = new Timer(400, new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
@@ -201,16 +202,16 @@ public class SwingTCPApp extends JFrame {
                 storeName = (String) jcombo.getSelectedItem();
                 String[] indexFieldNames = null;
                 try {
-                    indexFieldNames = (String[]) client.submitCommand(Server_Thread.GET_KEYED_FIELDS + storeName);
-                } catch (ConnectException cex) {
+                     ConfigurationQuery confQuery = new ConfigurationQuery(ConfigurationQuery.GET_KEYED_FIELDS, storeName);
+                     ConfigurationReply reply = client.queryConf(confQuery);
+                     indexFieldNames = (String[]) reply.getReply();
+                } catch (NodeCommunicationException cex) {
                     System.out.println(Client.CONNECTION_ERROR_MSG);
                     System.out.println("Specified server: " + server);
                     System.out.println("You should either check its availability, or resolve any possible network issues.");
                     System.exit(0);
-                } catch (UnknownHostException uhex) {
-                    System.out.println(Client.UNKNOWNHOST_ERROR_MSG);
-                    System.exit(0);
                 }
+                
                 if (indexFieldNames == null) {
                     return;
                 }
@@ -290,15 +291,7 @@ public class SwingTCPApp extends JFrame {
                                 throw new StoreInitException("The specified store "+storeName+" was not found.");
                             noRecsMsg.setText(noRecsLegend + r.getRecords().size());
                             timeMsg.setText(timeLegend + r.getTime());
-                            handleResult(r.getRecords());
-                        } catch (ConnectException cex) {
-                            System.out.println(Client.CONNECTION_ERROR_MSG);
-                            System.out.println("Specified server: " + server);
-                            System.out.println("You should either check its availability, or resolve any possible network issues.");
-                            System.exit(0);
-                        } catch (UnknownHostException uhex) {
-                            System.out.println(Client.UNKNOWNHOST_ERROR_MSG);
-                            System.exit(0);
+                            handleResult(r.getRecords());                      
                         } catch (StoreInitException ex) {
                             System.out.println(ex.getMessage());
                         } catch (NodeCommunicationException ex) {
