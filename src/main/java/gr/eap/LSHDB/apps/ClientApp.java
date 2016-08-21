@@ -1,6 +1,9 @@
 package gr.eap.LSHDB.apps;
 
+import gr.eap.LSHDB.HammingConfiguration;
+import gr.eap.LSHDB.HammingKey;
 import gr.eap.LSHDB.HammingLSHStore;
+import gr.eap.LSHDB.Key;
 import gr.eap.LSHDB.NoKeyedFieldsException;
 import gr.eap.LSHDB.NodeCommunicationException;
 import gr.eap.LSHDB.StoreInitException;
@@ -8,10 +11,14 @@ import gr.eap.LSHDB.client.Client;
 import gr.eap.LSHDB.util.QueryRecord;
 import gr.eap.LSHDB.util.Record;
 import gr.eap.LSHDB.util.Result;
+import java.awt.List;
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;
-import java.net.ConnectException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 /*
@@ -32,8 +39,43 @@ public class ClientApp {
         try {
             String folder = "c:/MAPDB";
             String engine = "gr.eap.LSHDB.MapDB";
-            lsh = new HammingLSHStore(folder, storeName, engine);
-
+            //lsh = new HammingLSHStore(folder, storeName, engine);
+            //HammingKey key=(HammingKey) lsh.getConfiguration().getKey("author");
+            //int[][] samples = key.samples;
+            int[][] samples=null;
+            try{
+                InputStream file = new FileInputStream("c:/Users/dimkar/samples.ser");
+                InputStream buffer = new BufferedInputStream(file);
+                ObjectInput input = new ObjectInputStream(buffer);
+                samples = (int[][])  input.readObject();
+             }catch(Exception ex){
+                 ex.printStackTrace();
+             }   
+            HammingKey key=new HammingKey("author");
+            key.samples = samples;
+            
+            HammingConfiguration hc = new HammingConfiguration(folder, storeName, engine, new Key[]{key}, true);
+            hc.saveConfiguration();
+             /* try {
+                OutputStream file = new FileOutputStream("c:/Users/dimkar/samples.ser");
+                OutputStream buffer = new BufferedOutputStream(file);
+                ObjectOutput output = new ObjectOutputStream(buffer);
+                output.writeObject(samples);
+                output.flush();
+                output.close();
+             }catch(Exception ex){
+                 ex.printStackTrace();
+             }*/
+             
+             
+             //HammingKey newKey = new HammingKey("author");
+            //newKey.samples = samples;
+            
+            
+            
+            
+            
+           
         } catch (StoreInitException ex) {
             System.out.println(ex.getMessage());
             System.exit(0);
@@ -42,7 +84,7 @@ public class ClientApp {
 
     public void query(String s) {
         QueryRecord query = new QueryRecord(100);
-        query.setKeyedField("author", new String[]{s}, 1, true);
+        query.setKeyedField("author", new String[]{s}, 0.8, true);
         Result r = null;
         try {
             r = lsh.query(query);
@@ -93,7 +135,7 @@ public class ClientApp {
 
     public static void main(String[] args) {
         ClientApp app = new ClientApp();
-        app.query("Becker");
+        //app.query("Kucherov");
         //ClientApp.tcpQuery("Chris");
     }
 
