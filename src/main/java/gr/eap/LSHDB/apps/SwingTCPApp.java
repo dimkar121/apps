@@ -8,7 +8,6 @@ package gr.eap.LSHDB.apps;
 // Imports
 import gr.eap.LSHDB.Key;
 import gr.eap.LSHDB.NodeCommunicationException;
-import gr.eap.LSHDB.Server_Thread;
 import gr.eap.LSHDB.StoreInitException;
 import gr.eap.LSHDB.client.Client;
 import gr.eap.LSHDB.util.ConfigurationQuery;
