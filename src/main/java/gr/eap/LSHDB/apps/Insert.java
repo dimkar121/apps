@@ -4,7 +4,7 @@
  */
 package gr.eap.LSHDB.apps;
 
-import gr.eap.LSHDB.BloomFilter;
+
 import gr.eap.LSHDB.HammingConfiguration;
 import gr.eap.LSHDB.HammingKey;
 import gr.eap.LSHDB.HammingLSHStore;
@@ -16,7 +16,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.Random;
 import java.util.StringTokenizer;
-
+import gr.eap.LSHDB.BloomFilter;
 /**
  *
  * @author dimkar
@@ -26,11 +26,10 @@ public class Insert {
     public static void main(String[] args) {
         try {
             String folder = "c:/MAPDB";
-            String storeName = "dblp_test";
+            String storeName = "dblp";
             String engine = "gr.eap.LSHDB.MapDB";
             Key key1 = new HammingKey("author", 30, .1, 75, true, true, new BloomFilter(700,15,2));
-            //Key key2 = new HammingKey("title", 30, .1, 55, 500, true, true);
-
+            
             HammingConfiguration hc = new HammingConfiguration(folder, storeName, engine, new Key[]{key1}, true);
             hc.saveConfiguration();
             
@@ -40,7 +39,7 @@ public class Insert {
 
             String file = "c:/voters/dblp.txt"; // Specify  the full path of dblp.txt   
 
-            int lines = 1000; //FileUtil.countLines(file);
+            int lines = FileUtil.countLines(file);
             System.out.println("About to insert " + lines + " records.");
 
             FileReader input1 = new FileReader(file);
