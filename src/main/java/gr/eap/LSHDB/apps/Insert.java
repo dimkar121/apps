@@ -39,7 +39,7 @@ public class Insert {
 
             String file = "c:/voters/dblp.txt"; // Specify  the full path of dblp.txt   
 
-            int lines = FileUtil.countLines(file);
+            int lines = 100;//FileUtil.countLines(file);
             System.out.println("About to insert " + lines + " records.");
 
             FileReader input1 = new FileReader(file);
