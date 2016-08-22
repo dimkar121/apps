@@ -16,7 +16,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.Random;
 import java.util.StringTokenizer;
-import gr.eap.LSHDB.BloomFilter;
+import gr.eap.LSHDB.embeddables.BloomFilter;
 /**
  *
  * @author dimkar
