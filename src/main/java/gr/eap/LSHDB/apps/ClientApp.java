@@ -40,53 +40,11 @@ public class ClientApp {
     String storeName = "dblp";
 
     
-    public int[][] deser(){
-         try{
-             InputStream file = new FileInputStream("c:/Users/dimkar/samples.ser");
-             InputStream buffer = new BufferedInputStream(file);
-             ObjectInput input = new ObjectInputStream(buffer);
-             int[][] samples = (int[][])  input.readObject();
-             return samples;
-             }catch(Exception ex){
-             ex.printStackTrace();
-             } 
-        return null; 
-    }
-    
-    
-    
-    public void ser(int[][] samples){
-         try {
-                OutputStream file = new FileOutputStream("c:/Users/dimkar/samples.ser");
-                OutputStream buffer = new BufferedOutputStream(file);
-                ObjectOutput output = new ObjectOutputStream(buffer);
-                output.writeObject(samples);
-                output.flush();
-                output.close();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-    }
-    
-    
     public ClientApp() {
         try {
             String folder = "c:/MAPDB";
             String engine = "gr.eap.LSHDB.MapDB";
             lsh = new HammingLSHStore(folder, storeName, engine);
-            HammingKey key = (HammingKey) lsh.getConfiguration().getKey("author");
-            int[][] samples = key.samples;
-            ser(samples);
-            
-            
-            
-            //int[][] samples=deser();
-            //HammingKey key=new HammingKey("author");
-            //key.samples = deser();
-            //HammingConfiguration hc = new HammingConfiguration(folder, storeName, engine, new Key[]{key}, true);
-            //hc.saveConfiguration();
-           
-
         } catch (StoreInitException ex) {
             System.out.println(ex.getMessage());
             System.exit(0);
@@ -146,7 +104,7 @@ public class ClientApp {
 
     public static void main(String[] args) {
         ClientApp app = new ClientApp();
-        //app.query("Kucherov");
+        app.query("Karapiperis");
         //ClientApp.tcpQuery("Chris");
     }
 
