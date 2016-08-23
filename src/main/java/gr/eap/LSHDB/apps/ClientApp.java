@@ -31,7 +31,7 @@ public class ClientApp {
         QueryRecord q =  new QueryRecord(100);
         q.setKeyedField("author", new String[]{s}, 0.8, true);
         try {
-            System.out.println(HammingLSHStore.open(storeName).query(q).asJSON());
+            System.out.println(HammingLSHStore.open(storeName).query(q).  asJSON());
         } catch (NoKeyedFieldsException | StoreInitException ex) {
             ex.printStackTrace();
         }
@@ -40,14 +40,14 @@ public class ClientApp {
 
     public static void tcpQuery(String s) {
 
-        int n = 100;
+        int n = 50;
         Thread[] threads = new Thread[n];
 
         for (int i = 0; i < n; i++) {
             int a = i;
             threads[i] = new Thread(new Runnable() {
                 public void run() {
-                    for (int j = 0; j < 1000; j++) {
+                    for (int j = 0; j < 100; j++) {
                         try {
                             Thread.sleep(200);
                             ThreadMXBean bean = ManagementFactory.getThreadMXBean();
@@ -74,7 +74,7 @@ public class ClientApp {
     public static void main(String[] args) {
         ClientApp app = new ClientApp();
         app.query("Kucherov");
-        //ClientApp.tcpQuery("Chris");
+       // ClientApp.tcpQuery("Chris");
     }
 
 }
