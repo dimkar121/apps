@@ -31,50 +31,18 @@ public class ClientApp {
         QueryRecord q =  new QueryRecord(100);
         q.setKeyedField("author", new String[]{s}, 0.8, true);
         try {
-            System.out.println(HammingLSHStore.open(storeName).query(q).  asJSON());
+            System.out.println(HammingLSHStore.open(storeName).query(q).asJSON());
         } catch (NoKeyedFieldsException | StoreInitException ex) {
             ex.printStackTrace();
         }
-        //lsh.close();
+        lsh.close();
     }
 
-    public static void tcpQuery(String s) {
-
-        int n = 50;
-        Thread[] threads = new Thread[n];
-
-        for (int i = 0; i < n; i++) {
-            int a = i;
-            threads[i] = new Thread(new Runnable() {
-                public void run() {
-                    for (int j = 0; j < 100; j++) {
-                        try {
-                            Thread.sleep(200);
-                            ThreadMXBean bean = ManagementFactory.getThreadMXBean();
-                            int t = bean.getThreadCount();
-                            //System.out.println("t="+t);    
-                            QueryRecord query = new QueryRecord("dblp", 100);
-                            query.setKeyedField("author", new String[]{s}, .8, true);
-                            final Client c = new Client("localhost", 4443);
-                            Result r = c.queryServer(query);
-                            System.out.println(a + ".  " + r.getRecords().size() + " " + r.getTime());
-                        } catch (NodeCommunicationException ex) {
-                            System.out.println(ex.getMessage());
-                        } catch (InterruptedException ex) {
-                            System.out.println(ex.getMessage());
-                        }
-                    }
-                }
-            });
-            threads[i].start();
-        }
-
-    }
+   
 
     public static void main(String[] args) {
         ClientApp app = new ClientApp();
-        app.query("Kucherov");
-       // ClientApp.tcpQuery("Chris");
+        app.query("Kucherov");       
     }
 
 }
