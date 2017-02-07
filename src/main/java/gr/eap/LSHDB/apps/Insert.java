@@ -5,6 +5,7 @@
 package gr.eap.LSHDB.apps;
 
 
+import gr.eap.LSHDB.DataStore;
 import gr.eap.LSHDB.HammingConfiguration;
 import gr.eap.LSHDB.HammingKey;
 import gr.eap.LSHDB.HammingLSHStore;
@@ -25,31 +26,38 @@ public class Insert {
 
     public static void main(String[] args) {
         try {
-            String folder = "c:/MAPDB";
+            String folder = "c:/LEVELDB";
             String storeName = "dblp";
-            String engine = "gr.eap.LSHDB.MapDB";
-            Key key1 = new HammingKey("author", 30, .1, 75, true, true, new BloomFilter(700,15,2));
+            String engine = "gr.eap.LSHDB.LevelDB";
+            HammingLSHStore lsh;
+            int base = 0;
+            if (! DataStore.exists(folder,storeName)){
+                Key key1 = new HammingKey("author", 34, .1, 50, true, true, new BloomFilter(500,19,2));            
+                HammingConfiguration hc = new HammingConfiguration(folder, storeName, engine, new Key[]{key1}, true);
+                hc.saveConfiguration();
+                lsh= new HammingLSHStore(folder, storeName, engine, hc, true);
+            } else {
+                lsh =(HammingLSHStore) HammingLSHStore.open(storeName);
+                base = 100000; 
+            }    
             
-            HammingConfiguration hc = new HammingConfiguration(folder, storeName, engine, new Key[]{key1}, true);
-            hc.saveConfiguration();
             
             
             
-            HammingLSHStore lsh = new HammingLSHStore(folder, storeName, engine, hc, true);
-
             String file = "c:/voters/dblp.txt"; // Specify  the full path of dblp.txt   
 
-            int lines = 100;//FileUtil.countLines(file);
+            int lines = FileUtil.countLines(file);
             System.out.println("About to insert " + lines + " records.");
 
             FileReader input1 = new FileReader(file);
             BufferedReader bufRead1 = new BufferedReader(input1);
-            //lines = lsh.countLines(file);
-            Random r = new Random();
-            for (int i = 0; i < lines; i++) {
+             
+            Random r = new Random();            
+            for (int i = 0; i < lines-1; i++) {
                 String line1 = bufRead1.readLine();
                 StringTokenizer st1 = new StringTokenizer(line1, ",");
-                String id = st1.nextToken().trim(); //id
+                String id = (base + i)+""; //id
+                st1.nextToken();
 
                 String type = st1.nextToken().trim();
                 String author = st1.nextToken().trim();
@@ -66,7 +74,7 @@ public class Insert {
                 if (st1.hasMoreTokens()) {
                     pages = st1.nextToken().trim();
                 }
-
+               
                 Record rec = new Record();
                 rec.setId(id);
 
@@ -80,10 +88,10 @@ public class Insert {
                 //rec.set("title_tokens", titles);
 
                 rec.set("pages", pages);
-                if (type.equals("article")) {
-                    rec.set("journal", journal);
+                if (type.equals("A")) {
+                    rec.set("J", journal);
                 } else {
-                    rec.set("conference or workshop", journal);
+                    rec.set("C", journal);
                 }
 
                 if (authors.length > 1) { // We insert those first authors, who have at least one given name and one surname.                    
@@ -91,7 +99,7 @@ public class Insert {
                     lsh.insert(rec);
                 }
 
-                System.out.println(i);
+                System.out.println(id);
 
             }
             lsh.close();

@@ -104,16 +104,25 @@ $(document).on({
     ajaxStart: function() { $("body").addClass("loading");    },
      ajaxStop: function() { $("body").removeClass("loading"); }    
 });
-//var server = "localhost";
+//var server = "semthr.static.otenet.gr:2221";
 var server = "83.212.115.69";
 //var server = "10.64.133.14";
 //var server="192.168.26.184";
 var port = "4443"; 
+function get_action(form) {
+var length = $("#authorText").val().length;
+	    $("#spanErrorMsg").html("");
+		var length = $("#authorText").val().length;
+	    if (length<4){
+	        $("#spanErrorMsg").html("  Please enter at least 3 characters.");
+	        return false;
+		}	
+}
 </script>
 <h1>LSHDB</h1>
-<h2>querying <script>document.write(server+" at port "+port);</script></h2>
-<form  name="form1" class="container">
-<label>Enter the surname of any author of the DBLP publications (2013-2016): </label><input type="text"  style="width: 140px;"   id="authorText" pattern=".{4,20}" required  /><span id="spanErrorMsg" class="bold-red"></span><br>
+<h2>querying <script>document.write(server);</script></h2>
+<form  name="form1" class="container" >
+<label>Enter the surname of any author of the DBLP publications (2015-2016): </label><input type="text"  style="width: 140px;"   id="authorText" pattern=".{4,20}" required  /><span id="spanErrorMsg" class="bold-red"></span><br>
 (e.g., Jones, Christen, Johnson etc) <br><br>
 <label>Similarity slider: </label></td><td><div id="range" style="width: 200px;" ></div><input id="sliderText" style="width: 40px;" ><br><br><br>
 <input type="submit" class="button" value="Submit" width="20%">
@@ -131,16 +140,18 @@ $(function() {
 		}	
 		
 	  $.ajax({
-	    url:"http://"+server+":"+port+"/JSON/dblp",
+	    url:"http://"+server+"/web/json.php",
 		type:"get",
 		data:{author_Query: $('#authorText').val().capitalizeFirstChar(), simPer: $('#sliderText').val(), maxNoRes:50 },
-        dataType: 'jsonp', // Notice! JSONP <-- P (lowercase)	         
+                dataType: 'json',   // Notice! JSONP <-- P (lowercase)	         
 		
         success: function(json) {
+                    //  var_dump json['data'];
 					   if (json.error){
 					       out="Error: "+json.errorMessage;
 					   } else { 
 					      data = json.data;
+                                           data = json['data'];    
 		                  if (data.length==0){
 					         out="No records returned.";
 					      } else {	   
@@ -172,9 +183,10 @@ $(function() {
 					 $('#container').html(out);
 
          },
-	     error: function(XMLHttpRequest, textStatus, errorThrown) { 	       
-			   
-               out="<table><tr><td>Cannot connect to the specified server instance: "+server+" at port "+port+".</td></tr></table>"; 	  
+	     error: function(xhr, textStatus, errorThrown) { 	       
+	       var err = eval("(" + xhr.responseText + ")");
+				   
+               out="<table><tr><td>"+  err  + "</td></tr></table>"; 	  
                $('#container').html(out);
 	   	 }     		
        });

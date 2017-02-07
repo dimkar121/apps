@@ -60,7 +60,7 @@ public class SwingTCPApp extends JFrame {
     TitledBorder tb;
     WaitLayerUI layerUI;
     JLayer<JComponent> jlayer;
-    String server = "localhost";
+    String server = "192.168.1.33";
     int port = 4443;
     boolean performComparisons = true;
     String storeName = "";
