@@ -228,13 +228,7 @@ class TableApp_NCVR extends JFrame {
         getContentPane().add(splitPane);
         jlayer = new JLayer<JComponent>(splitPane, layerUI);
 
-        //topPanel.add(splitPane, BorderLayout.CENTER);        
-        //getContentPane().add(topPanel);
         add(jlayer);
-
-        //dPanel.add(splitPane, BorderLayout.CENTER);        
-        //dPanel.add(dScrollPane, BorderLayout.CENTER);
-        //topPanel.add(dPanel, BorderLayout.SOUTH);
     }
 
     // Main entry point for this example
